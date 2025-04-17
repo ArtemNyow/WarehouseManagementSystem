@@ -1,4 +1,5 @@
 ﻿Imports System.Data.OleDb
+Imports System.Threading
 Imports System.Windows.Forms
 
 Public Class MainForm
@@ -17,6 +18,8 @@ Public Class MainForm
     Public connectionString As String = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=WarehouseDB.accdb;"
     Private dataTable As New DataTable()
 
+
+
     Public Sub New()
         InitializeComponents()
         LoadSuppliersFilter()
@@ -28,6 +31,7 @@ Public Class MainForm
         Me.Size = New Size(1024, 600)
         Me.MinimumSize = New Size(800, 600)
         Me.StartPosition = FormStartPosition.CenterScreen
+
 
         ' === Controls ===
         dgvIncomes = New DataGridView()
@@ -94,6 +98,10 @@ Public Class MainForm
         AddHandler btnAdd.Click, AddressOf btnAdd_Click
         AddHandler btnEdit.Click, AddressOf btnEdit_Click
         AddHandler btnDelete.Click, AddressOf btnDelete_Click
+ 
+
+
+
     End Sub
 
     Private Sub StyleButton(btn As Button, text As String)
