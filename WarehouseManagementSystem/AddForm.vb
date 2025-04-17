@@ -286,8 +286,8 @@ Public Class AddForm
             ' Перевірка вантажопідйомності
             If cmbTrucks.SelectedItem IsNot Nothing Then
                 Dim truckRow As DataRowView = CType(cmbTrucks.SelectedItem, DataRowView)
-                Dim capacity = Convert.ToInt32(truckRow("capacity"))
-                If value > capacity Then
+                Dim truck_capacity = Convert.ToInt32(truckRow("truck_capacity"))
+                If value > truck_capacity Then
                     MessageBox.Show("Кількість перевищує вантажопідйомність обраної машини!")
                     Return False
                 End If
