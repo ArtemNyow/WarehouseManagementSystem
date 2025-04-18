@@ -10,6 +10,7 @@ Public Class MainForm
     Private btnAdd As Button
     Private btnEdit As Button
     Private btnDelete As Button
+    Private btnAnalytics As Button
     Private txtSearch As TextBox
     Private cmbFilterSupplier As ComboBox
     Private statusStrip As StatusStrip
@@ -38,6 +39,7 @@ Public Class MainForm
         btnAdd = New Button()
         btnEdit = New Button()
         btnDelete = New Button()
+        btnAnalytics = New Button()
         txtSearch = New TextBox()
         cmbFilterSupplier = New ComboBox()
         statusStrip = New StatusStrip()
@@ -83,7 +85,16 @@ Public Class MainForm
         StyleButton(btnAdd, "Додати")
         StyleButton(btnEdit, "Редагувати")
         StyleButton(btnDelete, "Видалити")
-        buttonPanel.Controls.AddRange({btnAdd, btnEdit, btnDelete})
+        StyleButton(btnAnalytics, "Аналітика")
+        buttonPanel.Controls.AddRange({btnAdd, btnEdit, btnDelete, btnAnalytics})
+
+
+
+
+
+
+
+
 
         ' === StatusStrip ===
         statusStrip.Items.Add(toolStripStatusLabel)
@@ -98,7 +109,7 @@ Public Class MainForm
         AddHandler btnAdd.Click, AddressOf btnAdd_Click
         AddHandler btnEdit.Click, AddressOf btnEdit_Click
         AddHandler btnDelete.Click, AddressOf btnDelete_Click
- 
+        AddHandler btnAnalytics.Click, AddressOf btnAnalytics_Click
 
 
 
@@ -228,5 +239,10 @@ Public Class MainForm
                 MessageBox.Show("Помилка видалення: " & ex.Message)
             End Try
         End If
+    End Sub
+    Private Sub btnAnalytics_Click(sender As Object, e As EventArgs)
+        Using analyticsForm As New AnalyticsForm()
+            analyticsForm.ShowDialog()
+        End Using
     End Sub
 End Class
