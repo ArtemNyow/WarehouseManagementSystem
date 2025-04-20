@@ -12,7 +12,7 @@ Public Class AddForm
         InitializeComponent()
         ConfigureUI()
         LoadComboBoxes()
- 
+
     End Sub
 
     Public Sub New(id As Integer)
