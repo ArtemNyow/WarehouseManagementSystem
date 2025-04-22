@@ -28,7 +28,6 @@ Public Class EditForm
     Private Sub InitializeComponents()
         Me.SuspendLayout()
 
-        ' --- Form settings ---
         Me.Text = "Редагування транспортної накладної"
         Me.ClientSize = New Size(600, 850)
         Me.StartPosition = FormStartPosition.CenterParent
@@ -37,7 +36,6 @@ Public Class EditForm
         Me.MinimizeBox = False
         Me.BackColor = Color.White
 
-        ' --- Header panel ---
         Dim headerPanel As New Panel With {
             .Dock = DockStyle.Top,
             .Height = 60,
@@ -52,7 +50,6 @@ Public Class EditForm
         }
         headerPanel.Controls.Add(titleLabel)
 
-        ' --- Footer panel (buttons) ---
         Dim footerPanel As New FlowLayoutPanel With {
             .Dock = DockStyle.Bottom,
             .Height = 80,
@@ -65,7 +62,6 @@ Public Class EditForm
         footerPanel.Controls.Add(ButtonSave)
         footerPanel.Controls.Add(ButtonCancel)
 
-        ' --- Main content panel ---
         Dim mainPanel As New Panel With {
             .Dock = DockStyle.Fill,
             .Padding = New Padding(25),
@@ -86,7 +82,6 @@ Public Class EditForm
         tl.Controls.Add(CreateQuantityGroupBox(), 0, 2)
         mainPanel.Controls.Add(tl)
 
-        ' --- Add panels in correct Z-order ---
         Me.Controls.Add(mainPanel)
         Me.Controls.Add(footerPanel)
         Me.Controls.Add(headerPanel)
@@ -103,7 +98,7 @@ Public Class EditForm
         btn.ForeColor = Color.White
         btn.Font = New Font("Segoe UI", 10, FontStyle.Bold)
         btn.TextAlign = ContentAlignment.MiddleCenter
-        btn.Padding = New Padding(0)  ' remove extra padding
+        btn.Padding = New Padding(0)
         AddHandler btn.MouseEnter, AddressOf Button_MouseEnter
         AddHandler btn.MouseLeave, AddressOf Button_MouseLeave
         If btn Is ButtonSave Then AddHandler btn.Click, AddressOf ButtonSave_Click
@@ -112,35 +107,32 @@ Public Class EditForm
 
     Private Function CreateTransportGroupBox() As GroupBox
         Dim gb As New GroupBox With {
-        .Text = "Транспортні дані",
-        .Font = New Font("Segoe UI", 10, FontStyle.Bold),
-        .ForeColor = Color.FromArgb(33, 150, 243),
-        .BackColor = Color.White,
-        .Dock = DockStyle.Fill
-    }
+            .Text = "Транспортні дані",
+            .Font = New Font("Segoe UI", 10, FontStyle.Bold),
+            .ForeColor = Color.FromArgb(33, 150, 243),
+            .BackColor = Color.White,
+            .Dock = DockStyle.Fill
+        }
         Dim tbl As New TableLayoutPanel With {
-        .Dock = DockStyle.Fill,
-        .ColumnCount = 2,
-        .RowCount = 3,
-        .Padding = New Padding(10)
-    }
-        tbl.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 150)) ' Стовпець для лейблів
-        tbl.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100)) ' Стовпець для полів вводу
+            .Dock = DockStyle.Fill,
+            .ColumnCount = 2,
+            .RowCount = 3,
+            .Padding = New Padding(10)
+        }
+        tbl.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 150))
+        tbl.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100))
         tbl.RowStyles.Add(New RowStyle(SizeType.Percent, 33))
         tbl.RowStyles.Add(New RowStyle(SizeType.Percent, 33))
         tbl.RowStyles.Add(New RowStyle(SizeType.Percent, 34))
 
-        ' Row 0: Truck
         AddLabel(tbl, 0, 0, "Вантажний автомобіль:")
         ConfigureCombo(ComboBoxTrucks)
         tbl.Controls.Add(ComboBoxTrucks, 1, 0)
 
-        ' Row 1: Product
         AddLabel(tbl, 0, 1, "Товар:")
         ConfigureCombo(ComboBoxProducts)
         tbl.Controls.Add(ComboBoxProducts, 1, 1)
 
-        ' Row 2: Warehouse
         AddLabel(tbl, 0, 2, "Склад призначення:")
         ConfigureCombo(ComboBoxWarehouses)
         tbl.Controls.Add(ComboBoxWarehouses, 1, 2)
@@ -148,7 +140,6 @@ Public Class EditForm
         gb.Controls.Add(tbl)
         Return gb
     End Function
-
 
     Private Function CreateTimeGroupBox() As GroupBox
         ConfigureDateTimePicker(DateTimePickerArrival, "dd.MM.yyyy HH:mm")
@@ -212,15 +203,13 @@ Public Class EditForm
         Return gb
     End Function
 
-    Private Sub AddLabel(tbl As TableLayoutPanel, col As Integer, row As Integer, text As String)
-        Dim lbl As New Label With {
-        .Text = text,
-        .Font = New Font("Segoe UI", 9),
-        .TextAlign = ContentAlignment.MiddleRight, ' Right-align text
-        .Dock = DockStyle.Fill,
-        .Margin = New Padding(0, 0, 5, 0) ' Add right margin
-    }
-        tbl.Controls.Add(lbl, col, row)
+    Private Sub ConfigureTextBox(txt As TextBox)
+        txt.Dock = DockStyle.Fill
+        txt.Font = New Font("Segoe UI", 9)
+        txt.BackColor = Color.WhiteSmoke
+        txt.BorderStyle = BorderStyle.FixedSingle
+        txt.Anchor = AnchorStyles.Left Or AnchorStyles.Right
+        txt.Margin = New Padding(0)
     End Sub
 
     Private Sub ConfigureCombo(cmb As ComboBox)
@@ -228,6 +217,7 @@ Public Class EditForm
         cmb.Font = New Font("Segoe UI", 9)
         cmb.FlatStyle = FlatStyle.Flat
         cmb.BackColor = Color.WhiteSmoke
+        cmb.Anchor = AnchorStyles.Left Or AnchorStyles.Right
     End Sub
 
     Private Sub ConfigureDateTimePicker(dtp As DateTimePicker, fmt As String)
@@ -236,14 +226,18 @@ Public Class EditForm
         dtp.Format = DateTimePickerFormat.Custom
         dtp.CustomFormat = fmt
         dtp.CalendarMonthBackground = Color.WhiteSmoke
+        dtp.Anchor = AnchorStyles.Left Or AnchorStyles.Right
     End Sub
 
-    Private Sub ConfigureTextBox(txt As TextBox)
-        txt.Dock = DockStyle.Fill
-        txt.Font = New Font("Segoe UI", 9)
-        txt.BackColor = Color.WhiteSmoke
-        txt.BorderStyle = BorderStyle.None
-        txt.Padding = New Padding(5)
+    Private Sub AddLabel(tbl As TableLayoutPanel, col As Integer, row As Integer, text As String)
+        Dim lbl As New Label With {
+            .Text = text,
+            .Font = New Font("Segoe UI", 9),
+            .TextAlign = ContentAlignment.MiddleRight,
+            .Dock = DockStyle.Fill,
+            .Margin = New Padding(0, 6, 10, 6)
+        }
+        tbl.Controls.Add(lbl, col, row)
     End Sub
 
     Private Sub LoadComboBoxData()
