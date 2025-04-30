@@ -191,10 +191,15 @@ Public Class AddForm
     End Sub
 
     Private Function SaveIncome(conn As OleDbConnection, transaction As OleDbTransaction) As Integer
-        Dim query As String = If(editId = -1,
-            "INSERT INTO Incomes (supplier_id, product_id, truck_id, warehouse_id, arrival_time, departure_time, loaded_quantity, unloaded_quantity) " &
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            "UPDATE Incomes SET supplier_id=?, product_id=?, truck_id=?, warehouse_id=?, arrival_time=?, departure_time=?, loaded_quantity=?, unloaded_quantity=? WHERE income_id=?")
+        Dim query As String
+        If editId = -1 Then
+            ' Додаємо новий запис - НЕ згадуємо income_id
+            query = "INSERT INTO Incomes (supplier_id, product_id, truck_id, warehouse_id, arrival_time, departure_time, loaded_quantity, unloaded_quantity) " &
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        Else
+            ' Оновлюємо існуючий запис
+            query = "UPDATE Incomes SET supplier_id=?, product_id=?, truck_id=?, warehouse_id=?, arrival_time=?, departure_time=?, loaded_quantity=?, unloaded_quantity=? WHERE income_id=?"
+        End If
 
         Using cmd As New OleDbCommand(query, conn, transaction)
             cmd.Parameters.AddWithValue("@supplier", cmbSuppliers.SelectedValue)
@@ -206,9 +211,12 @@ Public Class AddForm
             cmd.Parameters.AddWithValue("@loaded", If(rbLoad.Checked, Convert.ToInt32(txtLoaded.Text), 0))
             cmd.Parameters.AddWithValue("@unloaded", If(rbUnload.Checked, Convert.ToInt32(txtUnloaded.Text), 0))
 
-            If editId <> -1 Then cmd.Parameters.AddWithValue("@id", editId)
+            If editId <> -1 Then
+                cmd.Parameters.AddWithValue("@id", editId) ' тільки для оновлення
+            End If
 
             cmd.ExecuteNonQuery()
+
             If editId = -1 Then
                 cmd.CommandText = "SELECT @@IDENTITY"
                 Return Convert.ToInt32(cmd.ExecuteScalar())
@@ -217,6 +225,10 @@ Public Class AddForm
             End If
         End Using
     End Function
+
+
+
+
 
     Private Sub UpdateStock(conn As OleDbConnection, transaction As OleDbTransaction, incomeId As Integer)
         Dim productId = Convert.ToInt32(cmbProducts.SelectedValue)
@@ -237,13 +249,15 @@ Public Class AddForm
             Dim exists = Convert.ToInt32(checkCmd.ExecuteScalar()) > 0
 
             If exists Then
+                ' Оновлюємо, якщо запис вже є
                 Using updateCmd As New OleDbCommand("UPDATE Stock SET quantity = quantity + @delta, last_update = NOW() WHERE product_id=@p AND warehouse_id=@w", conn, transaction)
                     updateCmd.Parameters.AddWithValue("@delta", stockChange)
                     updateCmd.Parameters.AddWithValue("@p", productId)
                     updateCmd.Parameters.AddWithValue("@w", warehouseId)
                     updateCmd.ExecuteNonQuery()
                 End Using
-            Else
+            ElseIf stockChange > 0 Then
+                ' Вставляємо тільки якщо щось завантажили
                 Using insertCmd As New OleDbCommand("INSERT INTO Stock (product_id, warehouse_id, quantity, last_update) VALUES (@p, @w, @qty, NOW())", conn, transaction)
                     insertCmd.Parameters.AddWithValue("@p", productId)
                     insertCmd.Parameters.AddWithValue("@w", warehouseId)
@@ -253,6 +267,7 @@ Public Class AddForm
             End If
         End Using
     End Sub
+
 
     Private Function ValidateInputs() As Boolean
         If cmbSuppliers.SelectedIndex = -1 OrElse cmbProducts.SelectedIndex = -1 OrElse cmbTrucks.SelectedIndex = -1 OrElse cmbWarehouses.SelectedIndex = -1 Then
